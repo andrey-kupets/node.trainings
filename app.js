@@ -1,7 +1,10 @@
 const express = require('express');
 
+const file = require('./dir/file');
 const fs = require('fs');
 const path = require('path');
+
+console.log(file); // log WHOLE file = const + log of required file
 
 const filePath = path.join(process.cwd(), 'dir', 'file.txt');
 
