@@ -44,7 +44,7 @@ const { config: { PORT } } = require('./config');
 //or
 // readStream.pipe(writeStre
 
-// ------------- 2. Express. Hbs --------------------
+// ------------- 2. Express. Hbs (use for emails) --------------------
 const app = express();
 
 app.use(express.static(path.join(process.cwd(), 'static')));
@@ -52,10 +52,19 @@ app.set('view engine', '.hbs');
 app.engine('.hbs', expressHbs({ defaultLayout: false }));
 app.set('views', path.join(process.cwd(), 'static'));
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true}))
+
 app.get('/login',(req, res) => {
     res.render('login');
+});
+
+app.post('/login', (req, res) => {
+    console.log(req.body);
+    res.json('hello from hbs');
 })
 
 app.listen(PORT, () => {
     console.log(`Port ${PORT} is being listened`);
 });
+
