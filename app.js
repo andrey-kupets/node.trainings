@@ -55,13 +55,61 @@ app.set('views', path.join(process.cwd(), 'static'));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
+const users = [];
+const dbPath = path.join(process.cwd(), 'DB', 'users.json');
+
+// попадаем  в форму методом гет
 app.get('/login',(req, res) => {
     res.render('login');
 });
 
+// форма направляет на этой же урле на "пост-вью", а с поста респонс перебрасывает нас на /юзерс
 app.post('/login', (req, res) => {
-    console.log(req.body);
-    res.json('hello from hbs');
+    users.push(req.body);
+    // res.json('user is registered');
+    res.redirect('/users');
+});
+
+// app.get('/users', (req, res) => {
+//     res.render('users', {users});
+// });
+app.get('/users', (req, res) => {
+    fs.readFile(dbPath, (err, data) => {
+        if (err) console.log(err);
+        const users = JSON.parse(data.toString());
+        res.render('users', { users });
+    });
+});
+
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+app.post('/register', (req, res) => {
+    const { body: { email }, body } = req;
+    fs.readFile(dbPath, (err, data) => {
+        if (err) console.log(err);
+        const users = JSON.parse(data.toString());
+        const invalidUser = users.some((user) => user.email === email);
+
+        if (invalidUser) {
+            res.redirect('/error');
+            return;
+        }
+
+        users.push(body);
+        fs.writeFile(dbPath, JSON.stringify(users), err1 => {
+            if (err1) console.log(err1);
+        });
+        res.redirect('/users');
+        console.log(invalidUser, 'invalidUser');
+        console.log(users, 'db');
+    });
+        console.log(body);
+});
+
+app.get('/error', (req, res) => {
+    res.render('error');
 })
 
 app.listen(PORT, () => {
