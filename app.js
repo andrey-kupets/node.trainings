@@ -90,9 +90,11 @@ app.post('/register', (req, res) => {
     fs.readFile(dbPath, (err, data) => {
         if (err) console.log(err);
         const users = JSON.parse(data.toString());
-        const invalidUser = users.some((user) => user.email === email);
+        // const invalidUser = users.some((user) => user.email === email);
+        const invalidUser = users.filter((user) => user.email === email);
 
-        if (invalidUser) {
+        // if (invalidUser) {
+        if (invalidUser.length) {
             res.redirect('/error');
             return;
         }
@@ -102,7 +104,7 @@ app.post('/register', (req, res) => {
             if (err1) console.log(err1);
         });
         res.redirect('/users');
-        console.log(invalidUser, 'invalidUser');
+        console.log(invalidUser.length, 'invalidUser');
         console.log(users, 'db');
     });
         console.log(body);
